@@ -1,209 +1,91 @@
 <!DOCTYPE html>
 <html data-bs-theme="dark">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>TranslateOutside</title>
-  <script type="text/javascript">
+  <head>
+  	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<title>TranslateOutside</title>
+  	<link rel="stylesheet" type="text/css" href="css/style.css">
+  	<script type="text/javascript" src="js/scripts.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+  </head>
+  <body class="d-flex flex-column p-4">
+    <div class="position-absolute" style="right: 1.5rem; top: 1rem;">
+      <a href="https://github.com/elmadraka/translateoutside" target="_blank" class="btn btn-link">
+        <svg height="28" aria-hidden="true" viewBox="0 0 24 24" version="1.1" width="28" data-view-component="true" class="octicon octicon-mark-github v-align-middle" fill="#FFFFFF">
+          <path d="M12 1C5.9225 1 1 5.9225 1 12C1 16.8675 4.14875 20.9787 8.52125 22.4362C9.07125 22.5325 9.2775 22.2025 9.2775 21.9137C9.2775 21.6525 9.26375 20.7862 9.26375 19.865C6.5 20.3737 5.785 19.1912 5.565 18.5725C5.44125 18.2562 4.905 17.28 4.4375 17.0187C4.0525 16.8125 3.5025 16.3037 4.42375 16.29C5.29 16.2762 5.90875 17.0875 6.115 17.4175C7.105 19.0812 8.68625 18.6137 9.31875 18.325C9.415 17.61 9.70375 17.1287 10.02 16.8537C7.5725 16.5787 5.015 15.63 5.015 11.4225C5.015 10.2262 5.44125 9.23625 6.1425 8.46625C6.0325 8.19125 5.6475 7.06375 6.2525 5.55125C6.2525 5.55125 7.17375 5.2625 9.2775 6.67875C10.1575 6.43125 11.0925 6.3075 12.0275 6.3075C12.9625 6.3075 13.8975 6.43125 14.7775 6.67875C16.8813 5.24875 17.8025 5.55125 17.8025 5.55125C18.4075 7.06375 18.0225 8.19125 17.9125 8.46625C18.6138 9.23625 19.04 10.2125 19.04 11.4225C19.04 15.6437 16.4688 16.5787 14.0213 16.8537C14.42 17.1975 14.7638 17.8575 14.7638 18.8887C14.7638 20.36 14.75 21.5425 14.75 21.9137C14.75 22.2025 14.9563 22.5462 15.5063 22.4362C19.8513 20.9787 23 16.8537 23 12C23 5.9225 18.0775 1 12 1Z"></path>
+        </svg>
+      </a>
+      <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#e3e3e3"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></button>
+    </div>
 
-
-    /**
-     * Download contents as a file
-     * Source: https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-     */
-    function downloadBlob(content, filename, contentType) {
-      // Create a link to download it
-      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(content, null, 2));
-      var dlAnchorElem = document.createElement('a');
-      dlAnchorElem.setAttribute("href", dataStr);
-      dlAnchorElem.setAttribute("download", filename);
-      dlAnchorElem.click();
-    }
-
-    let jsonFile, fileHeader, FileName, exportFile;
-    const keysForFile = { 
-      "Items.json": { 
-        'keys': ['id', 'description', 'name'] 
-      },
-      "MAPS": { 
-        'lookup': {
-          'id': ['events'],
-          'parameters': ['events', 'pages', 'list@code=401']
-        }, 
-        'keys': ['event_id', 'page_index', 'list_index', 'text'] 
-      },
-      "Enemies.json": ['id', 'name'] 
-    }
-
-    function reset(){
-      document.getElementById('controls').innerHTML = '';
-      document.getElementById('output').innerHTML = '';
-      fileHeader = null;
-    }
-
-    function fileSelected(event) {
-      var reader = new FileReader();
-      reset();
-      reader.onload = onReaderLoad;
-      reader.fileName, fileName = document.getElementById('json-file-input').files[0].name;
-      file_key = fileName.match(/Map[0-9]{3}.json/) !== null ? 'MAPS' : fileName
-      fileHeader = keysForFile[file_key]['keys']
-      reader.readAsText(document.getElementById('json-file-input').files[0]);
-      document.querySelectorAll('.file-name').forEach(elem => elem.innerHTML = fileName);
-      activateMergeButton();
-    }
-
-    function onReaderLoad(event){
-      jsonFile = JSON.parse(event.target.result);
-      loadCsv();
-    }
-
-    function setHeader(){
-      fileHeader = [...document.querySelectorAll('#controls > input[type=checkbox]:checked')].map((elem) => elem.id)
-      loadCsv();
-    }
-
-    function loadCsv(){
-      const items = jsonFile
-      
-      if(!fileHeader){ setHeader(); }
-      else{
-        const header = fileHeader;
-        const replacer = (key, value) => value === null ? '' : value
-
-        rows = []
-        items.events.filter((row) => row!==null).forEach((row) => {
-          row.pages.forEach((page, page_index) => {
-            page.list?.forEach((list, list_index) => {
-              if(list.code === 401){
-                text = list.parameters[0].replace(/\\/g, '\\\\');
-                rows.push([row.id, page_index, list_index, text].join('\t'))
-              }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
-                text = list.parameters[4].replace(/\\/g, '\\\\');
-                rows.push([row.id, page_index, list_index, text].join('\t'))
-              }
-            })
-          })
-        });
-
-        const csv = [header.join('\t'), rows.join('\r\n')].join('\r\n');
-
-        document.querySelector('#output + .row-number').innerHTML = `${rows.length} rows`
-        document.getElementById('output').value = csv;
-      }
-    }
-
-    function mergeFile(){
-      exportFile = jsonFile;
-      const translations = document.getElementById('merge-input').value
-
-      translations.split('\n').slice(1).forEach(function(row){
-        row = row.split('\t').map((col, index) => index > 2 ? col: parseInt(col));
-
-        if (['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportFile.events.find((event) => event?.id === row[0])?.pages[row[1]]?.list[row[2]]?.parameters[0])){
-          exportFile.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[3].replace(/\\\\/g, '\\').replace(/"/g, '');
-        }else{
-          exportFile.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters = [row[3].replace(/\\\\/g, '\\').replace(/"/g, '')];
-        }
-      })
-    }
-
-    (()=>{
-      const console_log = window.console.log;
-      window.console.log = function(...args){
-        console_log(...args);
-        var textarea = document.getElementById('console');
-        if(!textarea) return;
-        args.forEach(arg => textarea.value = `${JSON.stringify(arg)}\n${textarea.value}`);
-      }
-    })();
-
-    function activateMergeButton(){
-      document.getElementById('merge-button').disabled = !(document.getElementById('merge-input').value.length > 0 && typeof fileName !== 'undefined');
-    }
-
-    document.addEventListener("DOMContentLoaded", function(event) {
-      document.getElementById('json-file-input').addEventListener('change', fileSelected);
-      document.querySelector('button.reload').addEventListener('click', fileSelected);
-      document.getElementById('merge-input').addEventListener('input', activateMergeButton);
-      document.getElementById('merge-button').addEventListener('click', function(){
-        mergeFile();
-        downloadBlob(exportFile, fileName, 'application/json;charset=utf-8;');
-      });
-    });
-  </script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-  <style type="text/css">
-    hmtl{
-      height: 100%;
-    }
-    body{
-      min-height: 100vh;
-    }
-  </style>
-</head>
-<body class="d-flex flex-column p-4">
-  <div class="position-absolute" style="right: 1.5rem; top: 1rem;">
-    <a href="https://github.com/elmadraka/translateoutside" target="_blank" class="btn btn-link">
-      <svg height="22" aria-hidden="true" viewBox="0 0 24 24" version="1.1" width="32" data-view-component="true" class="octicon octicon-mark-github v-align-middle" fill="#FFFFFF">
-        <path d="M12 1C5.9225 1 1 5.9225 1 12C1 16.8675 4.14875 20.9787 8.52125 22.4362C9.07125 22.5325 9.2775 22.2025 9.2775 21.9137C9.2775 21.6525 9.26375 20.7862 9.26375 19.865C6.5 20.3737 5.785 19.1912 5.565 18.5725C5.44125 18.2562 4.905 17.28 4.4375 17.0187C4.0525 16.8125 3.5025 16.3037 4.42375 16.29C5.29 16.2762 5.90875 17.0875 6.115 17.4175C7.105 19.0812 8.68625 18.6137 9.31875 18.325C9.415 17.61 9.70375 17.1287 10.02 16.8537C7.5725 16.5787 5.015 15.63 5.015 11.4225C5.015 10.2262 5.44125 9.23625 6.1425 8.46625C6.0325 8.19125 5.6475 7.06375 6.2525 5.55125C6.2525 5.55125 7.17375 5.2625 9.2775 6.67875C10.1575 6.43125 11.0925 6.3075 12.0275 6.3075C12.9625 6.3075 13.8975 6.43125 14.7775 6.67875C16.8813 5.24875 17.8025 5.55125 17.8025 5.55125C18.4075 7.06375 18.0225 8.19125 17.9125 8.46625C18.6138 9.23625 19.04 10.2125 19.04 11.4225C19.04 15.6437 16.4688 16.5787 14.0213 16.8537C14.42 17.1975 14.7638 17.8575 14.7638 18.8887C14.7638 20.36 14.75 21.5425 14.75 21.9137C14.75 22.2025 14.9563 22.5462 15.5063 22.4362C19.8513 20.9787 23 16.8537 23 12C23 5.9225 18.0775 1 12 1Z"></path>
-      </svg>
-    </a>
-    <button type="button" class="btn btn-outline-white" data-bs-toggle="modal" data-bs-target="#staticBackdrop">HELP (?)</button>
-  </div>
-
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">What is this?</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>Look Outside is a great game but is has no translations currently, this is a tool to help you make your own translation of the game.</p>
-	  <p><a href='https://github.com/elmadraka/translateoutside'>github repo</a></p>
-	
-          <h5>How does this work?</h5>
-          <ol>
-            <li>On the left file selector add any Map***.json file </li>
-            <li>File relevant data will be parsed and presented as a tab separated values file which you can copy to a google docs spreadsheet and start translating</li>
-            <li>When you have your translation made copy the cells from the google sheet and paste them onto the right textarea as tab separated values (default copy-pasting method from gsheets)</li>
-            <li>Click the merge translation to json file and a download will start with the NEW Map***.json file with your translated strings merged into the file</li>
-            <li>Replace the <code>/data</code> folder file with this new downloaded file</li>
-            <li>Enjoy!</li>
-          </ol>
-          
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
+    <div class="modal fade" id="staticBackdrop" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable  modal-fullscreen-md-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">What is this?</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Look Outside is a great game but is has no translations currently, this is a tool to help you make your own translation of the game.</p>
+  	  <p><a href='https://github.com/elmadraka/translateoutside'>github repo</a></p>
+  	
+            <h5>How does this work?</h5>
+            <ol>
+              <li>On the left file selector add any Map***.json file </li>
+              <li>File relevant data will be parsed and presented as a tab separated values file which you can copy to a google docs spreadsheet and start translating</li>
+              <li>When you have your translation made copy the cells from the google sheet and paste them onto the right textarea as tab separated values (default copy-pasting method from gsheets)</li>
+              <li>Click the merge translation to json file and a download will start with the NEW Map***.json file with your translated strings merged into the file</li>
+              <li>Replace the <code>/data</code> folder file with this new downloaded file</li>
+              <li>Enjoy!</li>
+            </ol>
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-white" data-bs-dismiss="modal">OK!</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-	<h1 class="text-center"><span class="file-name">Here be dragons</span></h1>
-  <div class="container-fluid row border border-primary flex-grow-1 m-0 px-2 py-4">
-    <div class="col-6 d-flex flex-column">
-      <h2>JSON file to csv for translating</h2>
-      <div class="btn-group">
-        <input id="json-file-input" class="form-control" type="file" name="">
-        <button class="reload btn btn-outline-secondary" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
-        </button>
+  	<h1 class="text-center"><span class="file-name">Here be dragons</span></h1>
+    <div class="container-fluid row border flex-grow-1 m-0 px-2 py-4">
+      <div class="col-6 d-flex flex-column">
+        <h3>JSON file to <abbr title="Tab-Separated Values">TSV</abbr></h3>
+        <div class="btn-group">
+          <input id="json-file-input" class="form-control" type="file" name="" accept=".json" multiple>
+          <button class="reload btn btn-outline-secondary" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+          </button>
+        </div>
+        <div id="controls" class="my-2"></div>
+        <div class="row flex-grow-1 mx-0">
+          <div class="col-9 p-0 d-flex">
+            <textarea id="output" class="form-control flex-grow-1" readonly></textarea>
+          </div>
+          <div class="border p-0 col-3" style="height: calc(100vh - 324px); overflow: auto;">
+            <table class="table m-0 p-0">
+              <thead >
+                <tr><th scope="col"><input class="form-check-input" type="checkbox" id="selectAll" style="cursor: pointer;"></th><th scope="col">Name</th><th scope="col" class="text-center">Rows</th></tr>
+              </thead>
+              <tbody id="files-list">
+                <tr><td class="text-center h-100" colspan=3><i>no files selected.</i></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="border py-1 px-2 text-end row-number">&nbsp;</div>
+        <div class="d-grid gap-2">
+          <button id="download-tsv-button" class="btn btn-primary" type="button" disabled>DOWNLOAD <span id="download-tsv-count">TSV FILE(s)</span></button>
+        </div>
       </div>
-      <div id="controls" class="my-2"></div>
-      <textarea id="output" class="form-control flex-grow-1"></textarea>
-      <div class="border py-1 px-2 text-end row-number">&nbsp;</div>
-    </div>
-    <div class="col-6 d-flex flex-column border-start">
-      <h2>Merge translation csv with json file</h2>
-      <textarea id="merge-input" class="form-control flex-grow-1"></textarea>
-      <div class="position-relative"><span class="badge position-absolute" style="right: 0;">console</span><textarea id="console" class="form-control" rows=3 readonly></textarea></div>
-      <div class="d-grid gap-2">
-        <button id="merge-button" class="btn btn-primary" type="button" disabled>MERGE TRANSLATION TO <span class="file-name">JSON</span> FILE</button>
+      <div class="col-6 d-flex flex-column border-start">
+        <h3>Merge translated <abbr title="Tab-Separated Values">TSV</abbr> into <span class="file-name">JSON</span></h3>
+        <textarea id="merge-input" class="form-control flex-grow-1"></textarea>
+        <div class="position-relative"><span class="badge position-absolute" style="right: 0;">console</span><textarea tabindex="-1" id="console" class="form-control" rows=3 readonly></textarea></div>
+        <div class="d-grid gap-2">
+          <button id="merge-button" class="btn btn-primary" type="button" disabled>MERGE TRANSLATION TO <span class="file-name">JSON</span> FILE</button>
+        </div>
       </div>
     </div>
-  </div>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
-</body>
+  	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+  </body>
 </html>

@@ -1,0 +1,5 @@
+hmtl{ height: 100%; }
+body{ min-height: 100vh; }
+textarea { resize: none; }
+table th[scope=col]{ position: sticky; top: 0; }
+tbody tr:has(td[scope=row]), input[type=checkbox]{ cursor: pointer; }
