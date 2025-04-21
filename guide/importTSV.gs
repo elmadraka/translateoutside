@@ -43,7 +43,7 @@ function importarTSVsDeCarpeta() {
     sheet.getRange(1, 1, data.length, data[0].length).setValues(data);
   }
 
-  SpreadsheetApp.getUi().alert('¡Proceso completado! Los archivos CSV se han importado.');
+  SpreadsheetApp.getUi().alert('¡Proceso completado! Los archivos TSV se han importado.');
 }
 
 function onOpen() {
