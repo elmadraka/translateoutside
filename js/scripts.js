@@ -50,7 +50,7 @@ function fileSelected(event) {
   Array.from(files).forEach((file, idx, array) => {
     const reader = new FileReader();
     reader.onload = (event) => {
-      allFiles.push(new Archivo(file.name, JSON.parse(reader.result), false, idx === array.length - 1));
+      allFiles.push(new Archivo(file.name, JSON.parse(reader.result)));
     }
     reader.readAsText(file);
   });
@@ -59,11 +59,19 @@ function fileSelected(event) {
 
 function updateFileExplorer(){
   allFiles = allFiles.sort((a, b) => a.id - b.id);
+  if(allFiles.filter((file) => file.highlighted).length < 1){
+    allFiles.filter((file) => file.rows > 0)[0].highlighted = true;
+  }
   document.getElementById('files-list').innerHTML = '';
   let table_row = '';
   allFiles.forEach((row) => {
     table_row = document.createElement('tr');
-    table_row.innerHTML = `<td scope="row"><input class="form-check-input" type="checkbox" ${row.selected ? 'checked' : ''} id="${row.id}" value="${row.name}"></td><td>${row.name}</td><td class="text-center">${row.rows}</td>`;
+    if(row.rows > 0){
+      table_row.innerHTML += `<td scope="row"><input class="form-check-input" type="checkbox" ${row.selected ? 'checked' : ''} id="${row.id}" value="${row.name}"></td>`
+    }else{
+      table_row.innerHTML = '<td scope="row"></td>';  
+    }
+    table_row.innerHTML += `<td>${row.name}</td><td class="text-center">${row.rows}</td>`;
     table_row.addEventListener("click", clickTableRow);
     if(row.highlighted){
       table_row.classList.add('table-primary');
@@ -82,7 +90,7 @@ function enableDownloadTSVButton(){
 }
 
 function selectAll(){
-  allFiles.forEach((file) => file.selected = this.checked );
+  allFiles.filter((file) => file.rows > 0).forEach((file) => file.selected = this.checked );
   updateFileExplorer();
   enableDownloadTSVButton();
 }
@@ -94,7 +102,8 @@ function clickTableRow(elem){
     enableDownloadTSVButton();
   }else if(!elem.target.parentNode.classList.contains('table-primary')){
     allFiles.filter((file) => file.highlighted).map((file) => file.highlighted = false );
-    data = allFiles.filter((file) => file.id === parseInt(elem.target.parentNode.querySelector('input[type=checkbox]').id))[0];
+    data = allFiles.filter((file) => file.rows > 0).filter((file) => file.id === parseInt(elem.target.parentNode.querySelector('input[type=checkbox]')?.id))[0];
+    if(!data) return;
     data.highlighted = true;
     document.getElementById('output').value = data.tsv;
   }
