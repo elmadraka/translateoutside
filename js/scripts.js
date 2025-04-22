@@ -221,7 +221,7 @@ function mergeFile(){
       console.log(`Skipped line ${index} invalid data: ${row}`);
     }
   })
-  return exportFile;
+  return exportFile.json;
 }
 
 (()=>{
