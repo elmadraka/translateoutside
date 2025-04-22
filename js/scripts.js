@@ -204,16 +204,21 @@ function loadCsv(file){
 }
 
 function mergeFile(){
+  document.getElementById('console').value = '';
   exportFile = allFiles.filter((file) => file.highlighted)[0];
   const translations = document.getElementById('merge-input').value
 
-  translations.split('\n').slice(1).forEach(function(row){
+  translations.split('\n').slice(1).forEach(function(row, index){
     row = row.split('\t').map((col, index) => index > 2 ? col: parseInt(col));
-
-    if (['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportFile.json.events.find((event) => event?.id === row[0])?.pages[row[1]]?.list[row[2]]?.parameters[0])){
-      exportFile.json.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
-    }else{
-      exportFile.json.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters = [row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"')];
+    
+    try{
+      if (['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportFile.json.events.find((event) => event?.id === row[0])?.pages[row[1]]?.list[row[2]]?.parameters[0])){
+        exportFile.json.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+      }else{
+        exportFile.json.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters = [row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"')];
+      }
+    }catch(e){
+      console.log(`Skipped line ${index} invalid data: ${row}`);
     }
   })
   return exportFile;
