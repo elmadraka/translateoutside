@@ -7,7 +7,8 @@ const keysForFile = {
   "Items.json": ['id:int', 'name:string', 'description:string'],
   "MAPS": ['event_id:int', 'page_index:int', 'list_index:int', 'text'],
   "Skills.json": ['id:int', 'name:string', 'description:string', 'message1:string', 'message2:string'],
-  "States.json": ['id:int', 'name:string', 'note:string', 'message1:string', 'message2:string', 'message3:string', 'message4:string']
+  "States.json": ['id:int', 'name:string', 'note:string', 'message1:string', 'message2:string', 'message3:string', 'message4:string'],
+  "Weapons.json": ['id:int', 'name:string', 'description:string', 'note:string']
 }
 
 function Archivo(name, json, selected, highlighted){
