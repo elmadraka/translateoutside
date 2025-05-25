@@ -1,3 +1,5 @@
+const version = "1.04.02"
+
 let allFiles = []
 const keysForFile = { 
   "Actors.json": ['id:int', 'name:string', 'nickname:string'],
@@ -5,10 +7,12 @@ const keysForFile = {
   "Classes.json": ['id:int', 'name:string', 'note:string'],
   "Enemies.json": ['id:int', 'name:string'],
   "Items.json": ['id:int', 'name:string', 'description:string'],
-  "MAPS": ['event_id:int', 'page_index:int', 'list_index:int', 'text'],
+  "MAPS": ['event_id:int', 'page_index:int', 'list_index:int', 'code:int', 'text:string'],
   "Skills.json": ['id:int', 'name:string', 'description:string', 'message1:string', 'message2:string'],
   "States.json": ['id:int', 'name:string', 'note:string', 'message1:string', 'message2:string', 'message3:string', 'message4:string'],
-  "Weapons.json": ['id:int', 'name:string', 'description:string', 'note:string']
+  "Weapons.json": ['id:int', 'name:string', 'description:string', 'note:string'],
+  "Troops.json": ['id:int', 'page_index:int', 'list_index:int', 'code:int', 'text:string'],
+  "System.json": ['type:string', 'id:int', 'key:string', 'text:string']
 }
 
 function Archivo(name, json, selected, highlighted){
@@ -22,26 +26,113 @@ function Archivo(name, json, selected, highlighted){
     this.header = keysForFile[name.match(/Map[0-9]{3}.json/) !== null ? 'MAPS' : this.name];
   }catch{ console.log(`No header for ${name}`); }  
 
-  try{
+  //try{
     this.tsv = this.toTSV();
-  }catch{ console.log(`Unable to generate TSV for ${name}`); }  
+  //}catch{ console.log(`Unable to generate TSV for ${name}`); }  
 }
 
 Archivo.prototype.toTSV = function(){
   if(this.header === undefined){
-    console.log(`Unable to generate TSV for ${name} withtout header`);   
+    console.log(`Unable to generate TSV for ${this.name} withtout header`);   
   }else{
     if(this.name.match(/Map[0-9]{3}.json/)){
+      let start = this.json.events;
       let rows = []
-      this.json.events.filter((row) => row!==null).forEach((row) => {
+      start.filter((row) => row!==null).forEach((row) => {
         row.pages.forEach((page, page_index) => {
           page.list?.forEach((list, list_index) => {
             if(list.code === 401){
               text = list.parameters[0].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
-              rows.push([row.id, page_index, list_index, text].join('\t'))
+              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
+            }else if(list.code === 402){
+              text = list.parameters[1].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
+            }else if(list.code === 102){
+              text = list.parameters[0];
+              rows.push([row.id, page_index, list_index, list.code, text.join('|')].join('\t'))
             }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
               text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
-              rows.push([row.id, page_index, list_index, text].join('\t'))
+              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
+            }
+          })
+        })
+      });
+
+      let pre_tsv = [this.header.map((key) => key.split(':')[0]).join('\t'), rows.join('\r\n')].join('\r\n');
+
+      this.tsv = pre_tsv;
+      this.rows = rows.length;
+
+      return this.tsv;
+    }else if(this.name.match("System.json")){
+      let start = this.json;
+      let rows = []
+
+      const tkeys = ["armorTypes", "elements", "equipTypes", "locale", "skillTypes", 
+                     "terms:basic", "terms:commands", "terms:messages", "terms:params", 
+                     "weaponTypes"];
+      
+
+      tkeys.forEach((tkey, index) => {
+        let pkey = tkey.split(':')[0];
+        let skey = tkey.split(':')[1] !== undefined ? tkey.split(':')[1] : null;
+        
+        if(start[pkey] !== undefined){
+          if(start[pkey][skey] !== undefined){
+            if(Array.isArray(start[pkey][skey]))
+              start[pkey][skey].forEach((value, index) => {
+                if(value !== null)
+                  rows.push([tkey, index, null, value].join('\t'));
+              });
+            else if(typeof(start[pkey][skey]) === 'object'){
+              let index = 0;
+              for (const [key, value] of Object.entries(start[pkey][skey])){
+                if(value !== null)
+                  rows.push([tkey, index, key, value].join('\t'));
+                index++;
+              };
+            }else{
+              if(start[pkey][skey] !== null)
+                rows.push([tkey, 0, null, start[pkey][skey]].join('\t'));
+            }
+          }else{
+            if(Array.isArray(start[pkey]))
+              start[pkey].forEach((value, index) => {
+                if(value !== null && value !== '')
+                  rows.push([tkey, index, null, value].join('\t'));
+              });
+            else{
+              if(start[pkey] !== null)
+                rows.push([tkey, 0, null, start[pkey]].join('\t'));
+            }
+          }
+        };
+      });
+
+      let pre_tsv = [this.header.map((key) => key.split(':')[0]).join('\t'), rows.join('\r\n')].join('\r\n');
+
+      this.tsv = pre_tsv;
+      this.rows = rows.length;
+
+      return this.tsv;
+    }else if(this.name.match("Troops.json")){
+      let start = this.json;
+      let rows = []
+      start.filter((row) => row!==null).forEach((row) => {
+        row.pages.forEach((page, page_index) => {
+          page.list?.forEach((list, list_index) => {
+            if(list.code === 401){
+              text = list.parameters[0].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
+            }else if(list.code === 402){
+              text = list.parameters[1].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
+            }else if(list.code === 102){
+              text = list.parameters[0];
+              rows.push([row.id, page_index, list_index, list.code, text.join('|')].join('\t'))
+            }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
+              text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
             }
           })
         })
@@ -74,28 +165,76 @@ Archivo.prototype.toTSV = function(){
 Archivo.prototype.mergeTranslation = function(){
   const file = this;
   var exportJson = this.json;
-  if(this.name.match(/Map[0-9]{3}.json/)){
-    document.getElementById('console').value = '';
-    const translations = document.getElementById('merge-input').value
+  const translations = document.getElementById('merge-input').value
+  
+  document.getElementById('console').value = '';
 
+  if(this.name.match(/Map[0-9]{3}.json/)){
     translations.split('\n').slice(1).forEach(function(row, index){
       row = row.split('\t').map((col, idx) => file.header[idx].split(':')[1] === 'int' ? parseInt(col) : col);
-      
+
       try{
-        if (['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.events.find((event) => event?.id === row[0])?.pages[row[1]]?.list[row[2]]?.parameters[0])){
-          exportJson.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
-        }else{
-          exportJson.events.find((event) => event?.id === row[0]).pages[row[1]].list[row[2]].parameters = [row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"')];
+        let code = exportJson.events.find((line) => line?.id === row[0])?.pages[row[1]]?.list[row[2]]?.code;
+        if(code === 401){
+          exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters = [row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"')];
+        }else if(code === 402){
+          exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[1] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+        }else if(code === 102){
+          exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
+        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
+          exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }
       }catch(e){
         console.log(`translation:${index + 1} - line skipped [${row}]`);
       }
     })
-    return exportJson;
-  }else{
-    document.getElementById('console').value = '';
-    const translations = document.getElementById('merge-input').value
+  }else if(this.name.match("Troops.json")){
+    translations.split('\n').slice(1).forEach(function(row, index){
+      row = row.split('\t').map((col, idx) => file.header[idx].split(':')[1] === 'int' ? parseInt(col) : col);
 
+      try {
+        let code = exportJson.find((line) => line?.id === row[0])?.pages[row[1]]?.list[row[2]]?.code;
+        if(code === 401){
+          exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters = [row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"')];
+        }else if(code === 402){
+          exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[1] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+        }else if(code === 102){
+          exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
+        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
+          exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+        }
+      } catch(e) {
+        console.log(`translation:${index + 1} - line skipped [${row}]`);
+      };
+    });
+  }else if(this.name.match("System.json")){
+    translations.split('\n').slice(1).forEach(function(row, index){
+      row = row.split('\t').map((col, idx) => file.header[idx].split(':')[1] === 'int' ? parseInt(col) : col);
+
+      if(row[0].split(':')[1] === undefined){
+
+      }
+
+      let pkey = row[0].split(':')[0];
+      let skey = row[0].split(':')[1] !== undefined ? row[0].split(':')[1] : null;
+      
+      if(exportJson[pkey] !== undefined){
+        if(exportJson[pkey][skey] !== undefined){
+          //key and subkey present
+          if(Array.isArray(exportJson[pkey][skey]))
+            exportJson[pkey][skey][row[1]] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+          else if(typeof(exportJson[pkey][skey]) === 'object')
+            exportJson[pkey][skey][row[2]] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+        }else{
+          //only primary key present
+          if(typeof(exportJson[pkey]) === 'string')
+            exportJson[pkey] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+          else
+            exportJson[pkey][row[1]] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+        }
+      }
+    });
+  }else{
     translations.split('\n').slice(1).forEach(function(row, index){
       row = row.split('\t').map((col, idx) => file.header[idx].split(':')[1] === 'int' ? parseInt(col) : col);
       
@@ -107,8 +246,9 @@ Archivo.prototype.mergeTranslation = function(){
         console.log(`translation:${index + 1} - line skipped [${row}]`);
       }
     })
-    return exportJson;
   }
+
+  return exportJson;
 }
 
 function fileSelected(event) {
@@ -221,6 +361,7 @@ function activateMergeButton(){
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
+  document.querySelector('#version > span').innerHTML = version;
   document.getElementById('json-file-input').addEventListener('change', fileSelected);
   document.querySelector('button.reload').addEventListener('click', fileSelected);
   document.getElementById('merge-input').addEventListener('input', activateMergeButton);
