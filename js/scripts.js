@@ -1,10 +1,11 @@
-const version = "1.04.03"
+const version = "1.04.04"
 
 let allFiles = []
 const keysForFile = { 
   "Actors.json": ['id:int', 'name:string', 'nickname:string'],
   "Armors.json": ['id:int', 'name:string', 'description:string'],
   "Classes.json": ['id:int', 'name:string', 'note:string'],
+  "CommonEvents.json": ['id:int', 'list_index:int', 'code:int', 'text:string'],
   "Enemies.json": ['id:int', 'name:string'],
   "Items.json": ['id:int', 'name:string', 'description:string'],
   "MAPS": ['event_id:int', 'page_index:int', 'list_index:int', 'code:int', 'text:string'],
@@ -26,9 +27,9 @@ function Archivo(name, json, selected, highlighted){
     this.header = keysForFile[name.match(/Map[0-9]{3}.json/) !== null ? 'MAPS' : this.name];
   }catch{ console.log(`No header for ${name}`); }  
 
-  //try{
+  try{
     this.tsv = this.toTSV();
-  //}catch{ console.log(`Unable to generate TSV for ${name}`); }  
+  }catch{ console.log(`Unable to generate TSV for ${name}`); }  
 }
 
 Archivo.prototype.toTSV = function(){
@@ -144,6 +145,33 @@ Archivo.prototype.toTSV = function(){
       this.rows = rows.length;
 
       return this.tsv;
+    }else if(this.name.match("CommonEvents.json")){
+      let start = this.json;
+      let rows = []
+      start.filter((row) => row!==null).forEach((row) => {
+        row.list?.forEach((list, list_index) => {
+          if(list.code === 401){
+            text = list.parameters[0].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+            rows.push([row.id, list_index, list.code, text].join('\t'))
+          }else if(list.code === 402){
+            text = list.parameters[1].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+            rows.push([row.id, list_index, list.code, text].join('\t'))
+          }else if(list.code === 102){
+            text = list.parameters[0];
+            rows.push([row.id, list_index, list.code, text.join('|')].join('\t'))
+          }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
+            text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
+            rows.push([row.id, list_index, list.code, text].join('\t'))
+          }
+        })
+      });
+
+      let pre_tsv = [this.header.map((key) => key.split(':')[0]).join('\t'), rows.join('\r\n')].join('\r\n');
+
+      this.tsv = pre_tsv;
+      this.rows = rows.length;
+
+      return this.tsv;
     }else{
       let rows = []
       this.json.filter((row) => row!==null).forEach((row) => {
@@ -199,9 +227,28 @@ Archivo.prototype.mergeTranslation = function(){
         }else if(code === 402){
           exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[1] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }else if(code === 102){
-          exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
+          exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
         }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
           exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+        }
+      } catch(e) {
+        console.log(`translation:${index + 1} - line skipped [${row}]`);
+      };
+    });
+  }else if(this.name.match("CommonEvents.json")){
+    translations.split('\n').slice(1).forEach(function(row, index){
+      row = row.split('\t').map((col, idx) => file.header[idx].split(':')[1] === 'int' ? parseInt(col) : col);
+
+      try {
+        let code = exportJson.find((line) => line?.id === row[0])?.list[row[1]]?.code;
+        if(code === 401){
+          exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters = [row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"')];
+        }else if(code === 402){
+          exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[1] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
+        }else if(code === 102){
+          exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[0] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
+        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[0])){
+          exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[4] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }
       } catch(e) {
         console.log(`translation:${index + 1} - line skipped [${row}]`);
