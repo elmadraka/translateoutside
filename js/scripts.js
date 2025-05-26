@@ -1,4 +1,4 @@
-const version = "1.04.02"
+const version = "1.04.03"
 
 let allFiles = []
 const keysForFile = { 
@@ -180,7 +180,7 @@ Archivo.prototype.mergeTranslation = function(){
         }else if(code === 402){
           exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[1] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }else if(code === 102){
-          exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
+          exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
         }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
           exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }
