@@ -1,4 +1,4 @@
-const version = "1.04.05"
+const version = "1.04.06"
 
 let allFiles = []
 const keysForFile = { 
@@ -17,9 +17,9 @@ const keysForFile = {
 }
 
 function Archivo(name, json, selected, highlighted){
-  //this.id = parseInt(name.match(/\d+/)[0]);
   this.name = name;
   this.json = json;
+  this.originalJson = json;
   this.selected = selected || false;
   this.highlighted = highlighted || false;
 
@@ -27,9 +27,9 @@ function Archivo(name, json, selected, highlighted){
     this.header = keysForFile[name.match(/Map[0-9]{3}.json/) !== null ? 'MAPS' : this.name];
   }catch{ console.log(`No header for ${name}`); }  
 
-  //try{
+  try{
     this.tsv = this.toTSV();
-  //}catch{ console.log(`Unable to generate TSV for ${name}`); }  
+  }catch{ console.log(`Unable to generate TSV for ${name}`); }  
 }
 
 Archivo.prototype.toTSV = function(){
