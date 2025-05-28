@@ -1,4 +1,4 @@
-const version = "1.04.06"
+const version = "1.04.07"
 
 let allFiles = []
 const keysForFile = { 
@@ -409,6 +409,16 @@ function activateMergeButton(){
 
 document.addEventListener("DOMContentLoaded", function(event) {
   document.querySelector('#version > span').innerHTML = version;
+  document.getElementById('version').addEventListener('click', function(){
+    document.querySelectorAll('.cool-border-start,.border-start').forEach(elem => {
+      elem.classList.toggle('cool-border-start');
+      elem.classList.toggle('border-start');
+    });
+    document.querySelectorAll('.cool-border,.boring-border').forEach(elem => {
+      elem.classList.toggle('cool-border');
+      elem.classList.toggle('boring-border');
+    });
+  });
   document.getElementById('json-file-input').addEventListener('change', fileSelected);
   document.querySelector('button.reload').addEventListener('click', fileSelected);
   document.getElementById('merge-input').addEventListener('input', activateMergeButton);

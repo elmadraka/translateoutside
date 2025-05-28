@@ -1,14 +1,11 @@
-:root{ --transparency: 80%; }
+:root{ --transparency: 75%; }
 html{ height: 100%; user-select: none; }
 body{ min-height: 100vh; }
 textarea { resize: none; }
 table th[scope=col]{ position: sticky; top: 0; }
 tbody tr:has(td[scope=row]), input[type=checkbox]{ cursor: pointer; }
+
 @property --a{ syntax: '<percentage>'; inherits: false; initial-value: 0%; }
-.cool-border{ border: 1px solid transparent; border-image: linear-gradient(to bottom right, color-mix(in srgb, #b827fc, transparent var(--transparency)) var(--a), color-mix(in srgb, #2c90fc, transparent var(--transparency)) calc(25% + var(--a)), color-mix(in srgb, #b8fd33, transparent var(--transparency)) calc(var(--a) + 50%), color-mix(in srgb, #fec837, transparent var(--transparency)) calc(var(--a) + 75%), color-mix(in srgb, #fd1892, transparent var(--transparency)) calc(var(--a) + 100%)); border-image-slice: 1; animation: a 10s linear infinite; }
+.cool-border, .cool-border-start, .border.cool-border{ border: 1px solid transparent !important; border-image: linear-gradient(to bottom right, color-mix(in srgb, #b827fc, transparent var(--transparency)) var(--a), color-mix(in srgb, #2c90fc, transparent var(--transparency)) calc(25% + var(--a)), color-mix(in srgb, #b8fd33, transparent var(--transparency)) calc(var(--a) + 50%), color-mix(in srgb, #fec837, transparent var(--transparency)) calc(var(--a) + 75%), color-mix(in srgb, #fd1892, transparent var(--transparency)) calc(var(--a) + 100%)) !important; border-image-slice: 1 !important; animation: a 10s linear infinite; }
 @keyframes a{ from { --a: -50%; } 50%{ --a: 50%; } to { --a: -50%; } }
-
-
-
-
-
+.cool-border-start{ border-top: 0 !important; border-right: 0 !important; border-bottom: 0 !important; }
