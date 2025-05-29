@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   document.getElementById('selectAll').addEventListener('change', selectAll);
   document.getElementById('download-tsv-button').addEventListener('click', downloadFiles);
 
-  if(document.cookie.split(';').find(cookie => cookie.split('=')[0] === 'cool') !== undefined){
+  if(document.cookie.split(';').find(cookie => cookie.split('=')[0].trim() === 'cool') !== undefined){
     console.log('cool exists');
     coolify();
   }
