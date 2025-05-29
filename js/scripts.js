@@ -1,4 +1,4 @@
-const version = "1.04.09"
+const version = "1.04.10"
 
 let allFiles = []
 const keysForFile = { 
@@ -88,8 +88,9 @@ Archivo.prototype.toTSV = function(){
             else if(typeof(start[pkey][skey]) === 'object'){
               let index = 0;
               for (const [key, value] of Object.entries(start[pkey][skey])){
-                if(value !== null)
+                if(value !== null){
                   rows.push([tkey, index, key, value].join('\t'));
+                }
                 index++;
               };
             }else{
@@ -112,7 +113,7 @@ Archivo.prototype.toTSV = function(){
 
       let pre_tsv = [this.header.map((key) => key.split(':')[0]).join('\t'), rows.join('\r\n')].join('\r\n');
 
-      this.tsv = pre_tsv;
+      this.tsv = pre_tsv.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
       this.rows = rows.length;
 
       return this.tsv;
