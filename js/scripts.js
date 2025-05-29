@@ -1,4 +1,4 @@
-const version = "1.04.07"
+const version = "1.04.08"
 
 let allFiles = []
 const keysForFile = { 
@@ -49,7 +49,7 @@ Archivo.prototype.toTSV = function(){
               text = list.parameters[1].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
               rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
             }else if(list.code === 102){
-              text = list.parameters[0];
+              text = list.parameters[0].map(elem => elem.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"'));
               rows.push([row.id, page_index, list_index, list.code, text.join('|')].join('\t'))
             }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
               text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
@@ -129,7 +129,7 @@ Archivo.prototype.toTSV = function(){
               text = list.parameters[1].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
               rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
             }else if(list.code === 102){
-              text = list.parameters[0];
+              text = list.parameters[0].map(elem => elem.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"'));
               rows.push([row.id, page_index, list_index, list.code, text.join('|')].join('\t'))
             }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
               text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
@@ -157,7 +157,7 @@ Archivo.prototype.toTSV = function(){
             text = list.parameters[1].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
             rows.push([row.id, list_index, list.code, text].join('\t'))
           }else if(list.code === 102){
-            text = list.parameters[0];
+            text = list.parameters[0].map(elem => elem.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"'));
             rows.push([row.id, list_index, list.code, text.join('|')].join('\t'))
           }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
             text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
