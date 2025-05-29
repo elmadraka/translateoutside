@@ -1,4 +1,4 @@
-const version = "1.04.08"
+const version = "1.04.09"
 
 let allFiles = []
 const keysForFile = { 
@@ -175,7 +175,7 @@ Archivo.prototype.toTSV = function(){
     }else{
       let rows = []
       this.json.filter((row) => row!==null).forEach((row) => {
-        formatted_row = this.header.map((key) => key.split(':')[1] === 'int' ? row[key.split(':')[0]] : row[key.split(':')[0]].replace(/\n/g, '\\n'));
+        formatted_row = this.header.map((key) => key.split(':')[1] === 'int' ? row[key.split(':')[0]] : row[key.split(':')[0]].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"').replace(/\n/ig, '\\n'));
         if(!formatted_row.slice(1).every(elem => elem === null || elem === ''))
           rows.push(formatted_row.join('\t'));
       });
