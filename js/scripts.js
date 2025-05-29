@@ -1,4 +1,4 @@
-const version = "1.04.10"
+const version = "1.04.11"
 
 let allFiles = []
 const keysForFile = { 
@@ -160,6 +160,8 @@ Archivo.prototype.toTSV = function(){
           }else if(list.code === 102){
             text = list.parameters[0].map(elem => elem.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"'));
             rows.push([row.id, list_index, list.code, text.join('|')].join('\t'))
+          }else if(list.code === 122){
+            console.log('wip: code 122 -> last position: ', list.parameters.slice(-1));
           }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
             text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
             rows.push([row.id, list_index, list.code, text].join('\t'))
@@ -408,17 +410,42 @@ function activateMergeButton(){
   document.getElementById('merge-button').disabled = !(document.getElementById('merge-input').value.length > 0 && document.getElementById('json-file-input').files.length > 0);
 }
 
+function coolify(){
+  document.querySelectorAll('.border-start').forEach(elem => {
+    elem.classList.add('cool-border-start');
+    elem.classList.toggle('border-start');
+  });
+  document.querySelectorAll('.boring-border').forEach(elem => {
+    elem.classList.toggle('cool-border');
+    elem.classList.toggle('boring-border');
+  });
+}
+
+function uncoolify(){
+  document.querySelectorAll('.cool-border-start').forEach(elem => {
+    elem.classList.toggle('cool-border-start');
+    elem.classList.toggle('border-start');
+  });
+  document.querySelectorAll('.cool-border').forEach(elem => {
+    elem.classList.toggle('cool-border');
+    elem.classList.toggle('boring-border');
+  }); 
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
+  if(document.cookie.split(';').find(cookie => cookie.split('=')[0] === 'cool') !== undefined)
+    coolify();
+
   document.querySelector('#version > span').innerHTML = version;
   document.getElementById('version').addEventListener('click', function(){
-    document.querySelectorAll('.cool-border-start,.border-start').forEach(elem => {
-      elem.classList.toggle('cool-border-start');
-      elem.classList.toggle('border-start');
-    });
-    document.querySelectorAll('.cool-border,.boring-border').forEach(elem => {
-      elem.classList.toggle('cool-border');
-      elem.classList.toggle('boring-border');
-    });
+    if(document.cookie.split(';').find(cookie => cookie.split('=')[0] === 'cool') !== undefined){
+      uncoolify();
+      document.cookie = "cool=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+    else{
+      document.cookie = `cool=true; path=/; max-age=${60 * 60 * 24 * 14};`;
+      coolify();
+    }
   });
   document.getElementById('json-file-input').addEventListener('change', fileSelected);
   document.querySelector('button.reload').addEventListener('click', fileSelected);
