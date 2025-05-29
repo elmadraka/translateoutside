@@ -435,7 +435,7 @@ function uncoolify(){
 document.addEventListener("DOMContentLoaded", function(event) {
   document.querySelector('#version > span').innerHTML = version;
   document.getElementById('version').addEventListener('click', function(){
-    if(document.cookie.split(';').find(cookie => cookie.split('=')[0] === 'cool') !== undefined){
+    if(document.cookie.split(';').find(cookie => cookie.split('=')[0].trim() === 'cool') !== undefined){
       uncoolify();
       document.cookie = "cool=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
@@ -454,8 +454,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
   document.getElementById('selectAll').addEventListener('change', selectAll);
   document.getElementById('download-tsv-button').addEventListener('click', downloadFiles);
 
-  if(document.cookie.split(';').find(cookie => cookie.split('=')[0].trim() === 'cool') !== undefined){
-    console.log('cool exists');
+  if(document.cookie.split(';').find(cookie => cookie.split('=')[0].trim() === 'cool') !== undefined)
     coolify();
-  }
 });
