@@ -433,9 +433,6 @@ function uncoolify(){
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  if(document.cookie.split(';').find(cookie => cookie.split('=')[0] === 'cool') !== undefined)
-    coolify();
-
   document.querySelector('#version > span').innerHTML = version;
   document.getElementById('version').addEventListener('click', function(){
     if(document.cookie.split(';').find(cookie => cookie.split('=')[0] === 'cool') !== undefined){
@@ -456,4 +453,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
   });
   document.getElementById('selectAll').addEventListener('change', selectAll);
   document.getElementById('download-tsv-button').addEventListener('click', downloadFiles);
+
+  if(document.cookie.split(';').find(cookie => cookie.split('=')[0] === 'cool') !== undefined){
+    console.log('cool exists');
+    coolify();
+  }
 });
