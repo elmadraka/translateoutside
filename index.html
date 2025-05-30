@@ -51,11 +51,11 @@
       </div>
     </div>
   	<h1 class="text-center"><span class="file-name">Here be dragons</span></h1>
-    <div class="container-fluid row border boring-border flex-grow-1 m-0 px-2 py-4">
+    <div class="container-fluid row border flex-grow-1 m-0 px-2 py-4">
       <div class="col-6 d-flex flex-column">
         <h3>JSON file to <abbr title="Tab-Separated Values">TSV</abbr></h3>
         <div class="btn-group">
-          <input id="json-file-input" class="form-control boring-border" type="file" name="" accept=".json" multiple>
+          <input id="json-file-input" class="form-control" type="file" name="" accept=".json" multiple>
           <button class="reload btn btn-outline-secondary" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
           </button>
@@ -63,9 +63,9 @@
         <div id="controls" class="my-2"></div>
         <div class="row flex-grow-1 mx-0">
           <div class="col-9 p-0 d-flex">
-            <textarea id="output" class="form-control flex-grow-1 boring-border" readonly></textarea>
+            <textarea id="output" class="form-control flex-grow-1" readonly></textarea>
           </div>
-          <div class="border boring-border p-0 col-3" style="height: calc(100vh - 324px); overflow: auto;">
+          <div class="border p-0 col-3" style="height: calc(100vh - 324px); overflow: auto;">
             <table class="table m-0 p-0">
               <thead >
                 <tr><th scope="col"><input class="form-check-input" type="checkbox" id="selectAll" style="cursor: pointer;"></th><th scope="col">Name</th><th scope="col" class="text-center">Rows</th></tr>
@@ -76,15 +76,15 @@
             </table>
           </div>
         </div>
-        <div class="boring-border py-1 px-2 text-end row-number">&nbsp;</div>
+        <div class="py-1 px-2 text-end row-number">&nbsp;</div>
         <div class="d-grid gap-2">
           <button id="download-tsv-button" class="btn btn-primary" type="button" disabled>DOWNLOAD <span id="download-tsv-count">TSV FILE(s)</span></button>
         </div>
       </div>
       <div class="col-6 d-flex flex-column border-start">
         <h3>Merge translated <abbr title="Tab-Separated Values">TSV</abbr> into <span class="file-name">JSON</span></h3>
-        <textarea id="merge-input" class="form-control flex-grow-1 boring-border"></textarea>
-        <div class="position-relative"><span class="badge position-absolute" style="right: 0;">console</span><textarea tabindex="-1" id="console" class="form-control boring-border" rows=3 readonly></textarea></div>
+        <textarea id="merge-input" class="form-control flex-grow-1"></textarea>
+        <div class="position-relative"><span class="badge position-absolute" style="right: 0;">console</span><textarea tabindex="-1" id="console" class="form-control" rows=3 readonly></textarea></div>
         <div class="d-grid gap-2">
           <button id="merge-button" class="btn btn-primary" type="button" disabled>MERGE TRANSLATION TO <span class="file-name">JSON</span> FILE</button>
         </div>

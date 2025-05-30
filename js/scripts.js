@@ -1,4 +1,4 @@
-const version = "1.04.11"
+const version = "1.04.12"
 
 let allFiles = []
 const keysForFile = { 
@@ -34,7 +34,9 @@ function Archivo(name, json, selected, highlighted){
 
 Archivo.prototype.toTSV = function(){
   if(this.header === undefined){
-    console.log(`Unable to generate TSV for ${this.name} withtout header`);   
+    document.getElementById('output').value = '';
+    this.rows = 'n/a';
+    console.log(`Unable to generate TSV for ${this.name} withtout header`);
   }else{
     if(this.name.match(/Map[0-9]{3}.json/)){
       let start = this.json.events;
@@ -63,6 +65,9 @@ Archivo.prototype.toTSV = function(){
 
       this.tsv = pre_tsv;
       this.rows = rows.length;
+      
+      if(this.rows === 0)
+        document.getElementById('output').value = '';
 
       return this.tsv;
     }else if(this.name.match("System.json")){
@@ -161,7 +166,7 @@ Archivo.prototype.toTSV = function(){
             text = list.parameters[0].map(elem => elem.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"'));
             rows.push([row.id, list_index, list.code, text.join('|')].join('\t'))
           }else if(list.code === 122){
-            console.log('wip: code 122 -> last position: ', list.parameters.slice(-1));
+            //console.log('wip: code 122 -> last position: ', list.parameters.slice(-1));
           }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
             text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
             rows.push([row.id, list_index, list.code, text].join('\t'))
@@ -410,39 +415,20 @@ function activateMergeButton(){
   document.getElementById('merge-button').disabled = !(document.getElementById('merge-input').value.length > 0 && document.getElementById('json-file-input').files.length > 0);
 }
 
-function coolify(){
-  document.querySelectorAll('.border-start').forEach(elem => {
-    elem.classList.add('cool-border-start');
-    elem.classList.toggle('border-start');
-  });
-  document.querySelectorAll('.boring-border').forEach(elem => {
-    elem.classList.toggle('cool-border');
-    elem.classList.toggle('boring-border');
-  });
-}
-
-function uncoolify(){
-  document.querySelectorAll('.cool-border-start').forEach(elem => {
-    elem.classList.toggle('cool-border-start');
-    elem.classList.toggle('border-start');
-  });
-  document.querySelectorAll('.cool-border').forEach(elem => {
-    elem.classList.toggle('cool-border');
-    elem.classList.toggle('boring-border');
-  }); 
+function coolify(should){
+  if(should){
+    document.body.classList.add('cool');
+    document.cookie = `cool=true; path=/; max-age=${60 * 60 * 24 * 14};`;
+  }else{
+    document.body.classList.remove('cool');
+    document.cookie = "cool=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
   document.querySelector('#version > span').innerHTML = version;
   document.getElementById('version').addEventListener('click', function(){
-    if(document.cookie.split(';').find(cookie => cookie.split('=')[0].trim() === 'cool') !== undefined){
-      uncoolify();
-      document.cookie = "cool=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    }
-    else{
-      document.cookie = `cool=true; path=/; max-age=${60 * 60 * 24 * 14};`;
-      coolify();
-    }
+    coolify(!document.body.classList.contains('cool'));
   });
   document.getElementById('json-file-input').addEventListener('change', fileSelected);
   document.querySelector('button.reload').addEventListener('click', fileSelected);
@@ -454,6 +440,5 @@ document.addEventListener("DOMContentLoaded", function(event) {
   document.getElementById('selectAll').addEventListener('change', selectAll);
   document.getElementById('download-tsv-button').addEventListener('click', downloadFiles);
 
-  if(document.cookie.split(';').find(cookie => cookie.split('=')[0].trim() === 'cool') !== undefined)
-    coolify();
+  coolify(document.cookie.split(';').find(cookie => cookie.split('=')[0].trim() === 'cool'));
 });

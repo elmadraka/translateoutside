@@ -6,6 +6,15 @@ table th[scope=col]{ position: sticky; top: 0; }
 tbody tr:has(td[scope=row]), input[type=checkbox]{ cursor: pointer; }
 
 @property --a{ syntax: '<percentage>'; inherits: false; initial-value: 0%; }
-.cool-border, .cool-border-start, .border.cool-border{ border: 1px solid transparent !important; border-image: linear-gradient(to bottom right, color-mix(in srgb, #b827fc, transparent var(--transparency)) var(--a), color-mix(in srgb, #2c90fc, transparent var(--transparency)) calc(25% + var(--a)), color-mix(in srgb, #b8fd33, transparent var(--transparency)) calc(var(--a) + 50%), color-mix(in srgb, #fec837, transparent var(--transparency)) calc(var(--a) + 75%), color-mix(in srgb, #fd1892, transparent var(--transparency)) calc(var(--a) + 100%)) !important; border-image-slice: 1 !important; animation: a 10s linear infinite; }
+.cool .border,
+.cool .btn.btn-primary, 
+.cool .btn.btn-outline-secondary, 
+.cool .border-start, 
+.cool input[type="file"],
+.cool textarea{ border: 1px solid transparent !important; border-image: linear-gradient(to bottom right, color-mix(in srgb, #b827fc, transparent var(--transparency)) var(--a), color-mix(in srgb, #2c90fc, transparent var(--transparency)) calc(25% + var(--a)), color-mix(in srgb, #b8fd33, transparent var(--transparency)) calc(var(--a) + 50%), color-mix(in srgb, #fec837, transparent var(--transparency)) calc(var(--a) + 75%), color-mix(in srgb, #fd1892, transparent var(--transparency)) calc(var(--a) + 100%)) !important; border-image-slice: 1 !important; animation: a 10s linear infinite; }
 @keyframes a{ from { --a: -50%; } 50%{ --a: 50%; } to { --a: -50%; } }
-.cool-border-start{ border-top: 0 !important; border-right: 0 !important; border-bottom: 0 !important; }
+.cool .border-start{ border-top: 0 !important; border-right: 0 !important; border-bottom: 0 !important; }
+.cool .btn.btn-primary{ --transparency: 30%; border: 1px solid transparent !important; background-image: linear-gradient(to bottom right, color-mix(in srgb, #b827fc, transparent var(--transparency)) var(--a), color-mix(in srgb, #2c90fc, transparent var(--transparency)) calc(25% + var(--a)), color-mix(in srgb, #b8fd33, transparent var(--transparency)) calc(var(--a) + 50%), color-mix(in srgb, #fec837, transparent var(--transparency)) calc(var(--a) + 75%), color-mix(in srgb, #fd1892, transparent var(--transparency)) calc(var(--a) + 100%)) !important; animation: a 15s linear infinite; animation-play-state: paused; }
+.cool .btn.btn-primary:not(:disabled){ animation-play-state: running; }
+.cool .form-check-input:checked{ background-color: color-mix(in srgb, #fd1892, transparent var(--transparency)) !important; border-color: color-mix(in srgb, #fd1892, transparent var(--transparency)) !important; }
+.cool .form-check-input:focus{ box-shadow: 0 0 0 .25rem color-mix(in srgb, #fd1892, transparent 80%) !important; }
