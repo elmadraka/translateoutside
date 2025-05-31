@@ -1,4 +1,4 @@
-const version = "1.04.12"
+const version = "1.04.13"
 
 let allFiles = []
 const keysForFile = { 
@@ -53,9 +53,10 @@ Archivo.prototype.toTSV = function(){
             }else if(list.code === 102){
               text = list.parameters[0].map(elem => elem.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"'));
               rows.push([row.id, page_index, list_index, list.code, text.join('|')].join('\t'))
-            }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
+            }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs', ''].includes(list.parameters[0])){
               text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
-              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
+              if(text != '')
+                rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
             }
           })
         })
@@ -137,9 +138,10 @@ Archivo.prototype.toTSV = function(){
             }else if(list.code === 102){
               text = list.parameters[0].map(elem => elem.replace(/\\/g, '\\\\').replace(/\"/g, '\\\"'));
               rows.push([row.id, page_index, list_index, list.code, text.join('|')].join('\t'))
-            }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
+            }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs', ''].includes(list.parameters[0])){
               text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
-              rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
+              if(text != '')
+                rows.push([row.id, page_index, list_index, list.code, text].join('\t'))
             }
           })
         })
@@ -167,9 +169,10 @@ Archivo.prototype.toTSV = function(){
             rows.push([row.id, list_index, list.code, text.join('|')].join('\t'))
           }else if(list.code === 122){
             //console.log('wip: code 122 -> last position: ', list.parameters.slice(-1));
-          }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(list.parameters[0])){
+          }else if(list.code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs', ''].includes(list.parameters[0])){
             text = list.parameters[4].replace(/\\/g, '\\\\').replace(/\"/g, '\\\"');
-            rows.push([row.id, list_index, list.code, text].join('\t'))
+            if(text != '')
+              rows.push([row.id, list_index, list.code, text].join('\t'))
           }
         })
       });
@@ -217,7 +220,7 @@ Archivo.prototype.mergeTranslation = function(){
           exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[1] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }else if(code === 102){
           exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
-        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
+        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs', ''].includes(exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
           exportJson.events.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }
       }catch(e){
@@ -236,7 +239,7 @@ Archivo.prototype.mergeTranslation = function(){
           exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[1] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }else if(code === 102){
           exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
-        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
+        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs', ''].includes(exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[0])){
           exportJson.find((line) => line?.id === row[0]).pages[row[1]].list[row[2]].parameters[4] = row[4].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }
       } catch(e) {
@@ -255,7 +258,7 @@ Archivo.prototype.mergeTranslation = function(){
           exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[1] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }else if(code === 102){
           exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[0] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"').split('|');
-        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs'].includes(exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[0])){
+        }else if(code === 101 && ['Portrait_Recruits2', 'Portrait_NPCs', ''].includes(exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[0])){
           exportJson.find((line) => line?.id === row[0]).list[row[1]].parameters[4] = row[3].replace(/\\\\/g, '\\').replace(/\\\"/g, '\"');
         }
       } catch(e) {
