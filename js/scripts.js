@@ -327,7 +327,13 @@ function updateFileExplorer(){
   if(!allFiles.filter((file) => file.highlighted)[0] && allFiles.filter((file) => file.rows > 0)[0]){
     allFiles.filter((file) => file.rows > 0)[0].highlighted = true;
   }
-  document.getElementById('files-list').innerHTML = '';
+  
+  if(allFiles.length <= 0){
+    document.getElementById('output').value = '';
+    document.getElementById('files-list').innerHTML = '<tr><td class="text-center h-100" colspan=3><i>no files selected.</i></td></tr>';
+  }else
+    document.getElementById('files-list').innerHTML = '';
+
   let table_row = '';
   allFiles.forEach((row) => {
     table_row = document.createElement('tr');
@@ -346,6 +352,12 @@ function updateFileExplorer(){
     }
     document.getElementById('files-list').appendChild(table_row);
   });
+
+  if(document.querySelectorAll('input[type=checkbox]:not(#selectAll)').length > 0){
+    document.getElementById('selectAll').removeAttribute('disabled');
+  }else{
+    document.getElementById('selectAll').setAttribute('disabled', 'disabled');
+  }
 }
 
 function enableDownloadTSVButton(){
